@@ -404,7 +404,7 @@ const serializeVariables = function (variables) {
         }
 
         // otherwise should be a scalar type
-        obj.variables[varId] = [v.name, v.value];
+        obj.variables[varId] = [v.name, v.value || 0]; // 当v.value为null时，不能正常打开文件
         // only scalar vars have the potential to be cloud vars
         if (v.isCloud) obj.variables[varId].push(true);
     }
