@@ -1268,13 +1268,22 @@ class Runtime extends EventEmitter {
             const menuIconXML = menuIconURI ?
                 `iconURI="${menuIconURI}"` : '';
 
+            let blockIconURI = '';
+            if (categoryInfo.blockIconURI) {
+                blockIconURI = categoryInfo.blockIconURI;
+            } else if (categoryInfo.menuIconURI) {
+                blockIconURI = categoryInfo.menuIconURI;
+            }
+            const blockIconXML = blockIconURI ?
+                `iconURISelected="${blockIconURI}"` : '';
+
             let statusButtonXML = '';
             if (categoryInfo.showStatusButton) {
                 statusButtonXML = 'showStatusButton="true"';
             }
 
             xmlParts.push(`<category name="${name}" id="${categoryInfo.id}"
-                ${statusButtonXML} ${colorXML} ${menuIconXML}>`);
+                ${statusButtonXML} ${colorXML} ${menuIconXML} ${blockIconXML}>`);
             xmlParts.push.apply(xmlParts, paletteBlocks.map(block => block.xml));
             xmlParts.push('</category>');
         }
