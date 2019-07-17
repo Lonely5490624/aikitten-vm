@@ -53,7 +53,6 @@ class Scratch3FaceBlocks {
      */
     getPrimitives () {
         return {
-            video_controlvideo: this.controlVideo,
             face_detectface: this.detectFace,
             face_detectgender: this.detectGender,
             face_detectage: this.detectAge,
