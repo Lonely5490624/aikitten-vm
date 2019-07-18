@@ -40,7 +40,8 @@ const defaultBlockPackages = {
     scratch3_data: require('../blocks/scratch3_data'),
     scratch3_procedures: require('../blocks/scratch3_procedures'),
     scratch3_video: require('../blocks/scratch3_video'),
-    scratch3_face: require('../blocks/scratch3_face')
+    scratch3_face: require('../blocks/scratch3_face'),
+    scratch3_read: require('../blocks/scratch3_read')
 };
 
 /**
@@ -2046,6 +2047,8 @@ class Runtime extends EventEmitter {
      * @param {number} nonMonitorThreadCount The new nonMonitorThreadCount
      */
     _emitProjectRunStatus (nonMonitorThreadCount) {
+        // console.log('111', this._nonMonitorThreadCount);
+        // console.log('222', nonMonitorThreadCount);
         if (this._nonMonitorThreadCount === 0 && nonMonitorThreadCount > 0) {
             this.emit(Runtime.PROJECT_RUN_START);
         }

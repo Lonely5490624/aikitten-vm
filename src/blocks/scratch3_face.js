@@ -36,7 +36,6 @@ class Scratch3FaceBlocks {
          */
         this._counter = 0;
 
-        this.videoEle = null;
         this.faceGroup = {};
         this.searchResult = '';
 
@@ -80,20 +79,17 @@ class Scratch3FaceBlocks {
 
     controlVideo (args) {
         if (args.STATUS === 'ON') {
-            this.runtime.ioDevices.video.enableVideo().then(() => {
-                this.videoEle = this.runtime.ioDevices.video.provider._video;
-            });
+            this.runtime.ioDevices.video.enableVideo();
         } else {
             this.runtime.ioDevices.video.disableVideo();
-            this.videoEle = null;
         }
     }
 
     detectFace (args, util) {
-        if (!this.videoEle) {
+        if (!this.runtime.ioDevices.video.provider._video) {
             return;
         }
-        Face.detectionFace(this.videoEle).then(res => {
+        Face.detectionFace(this.runtime.ioDevices.video.provider._video).then(res => {
             if (res) {
                 util.startHats('face_whendetectedface');
             }
@@ -101,34 +97,34 @@ class Scratch3FaceBlocks {
     }
 
     detectGender (args) {
-        if (!this.videoEle) {
+        if (!this.runtime.ioDevices.video.provider._video) {
             return;
         }
         const gender = args.GENDER;
         return new Promise((resolve, reject) => {
-            Face.detectionGenderAndAge(this.videoEle).then(res => {
+            Face.detectionGenderAndAge(this.runtime.ioDevices.video.provider._video).then(res => {
                 resolve(res.gender === gender);
             });
         });
     }
 
     detectAge () {
-        if (!this.videoEle) {
+        if (!this.runtime.ioDevices.video.provider._video) {
             return;
         }
         return new Promise((resolve, reject) => {
-            Face.detectionGenderAndAge(this.videoEle).then(res => {
+            Face.detectionGenderAndAge(this.runtime.ioDevices.video.provider._video).then(res => {
                 resolve(parseInt(res.age, 10));
             });
         });
     }
     
     detectExpression () {
-        if (!this.videoEle) {
+        if (!this.runtime.ioDevices.video.provider._video) {
             return;
         }
         return new Promise((resolve, reject) => {
-            Face.detectionFaceExpressions(this.videoEle).then(res => {
+            Face.detectionFaceExpressions(this.runtime.ioDevices.video.provider._video).then(res => {
                 resolve(expressTrans[this._getViewerLanguageCode()][res] || '');
             });
         });
@@ -140,13 +136,13 @@ class Scratch3FaceBlocks {
     }
 
     addFaceToGroup (args) {
-        if (!this.videoEle) {
+        if (!this.runtime.ioDevices.video.provider._video) {
             return;
         }
         const group = args.GROUP;
         const name = args.FACE;
         return new Promise((resolve, reject) => {
-            Face.classFace(this.videoEle, name, this.faceGroup[group]).then(res => {
+            Face.classFace(this.runtime.ioDevices.video.provider._video, name, this.faceGroup[group]).then(res => {
                 this.faceGroup[group] = res;
                 resolve();
             });
@@ -154,12 +150,12 @@ class Scratch3FaceBlocks {
     }
 
     searchGroup (args, util) {
-        if (!this.videoEle) {
+        if (!this.runtime.ioDevices.video.provider._video) {
             return;
         }
         const group = args.GROUP;
         if (this.faceGroup[group]) {
-            Face.faceRecognition(this.videoEle, this.faceGroup[group]).then(res => {
+            Face.faceRecognition(this.runtime.ioDevices.video.provider._video, this.faceGroup[group]).then(res => {
                 if (res) {
                     util.startHats('face_whensearchedface', {
                         TEXT: res
