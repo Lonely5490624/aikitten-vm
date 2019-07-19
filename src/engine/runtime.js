@@ -41,7 +41,8 @@ const defaultBlockPackages = {
     scratch3_procedures: require('../blocks/scratch3_procedures'),
     scratch3_video: require('../blocks/scratch3_video'),
     scratch3_face: require('../blocks/scratch3_face'),
-    scratch3_read: require('../blocks/scratch3_read')
+    scratch3_read: require('../blocks/scratch3_read'),
+    scratch3_voice: require('../blocks/scratch3_voice')
 };
 
 /**
