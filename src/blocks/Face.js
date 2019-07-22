@@ -27,9 +27,10 @@ const Face = {
                 faceapi.nets.ageGenderNet.load(url) // 年龄、性别
             ]).then(res => {
                 resolve('models loaded');
-            }).catch(err => {
-                reject(err);
-            });
+            })
+                .catch(err => {
+                    reject(err);
+                });
         });
     },
     getFaceDetectorOptions: function (Detector = 'ssd_mobilenetv1') {
@@ -43,10 +44,14 @@ const Face = {
     },
     detectionFace: function (element) {
         return new Promise((resolve, reject) => {
-            faceapi.detectSingleFace(element, this.getFaceDetectorOptions()).then(res => {
-                resolve(res ? res : null);
-
-            });
+            faceapi.detectSingleFace(element, this.getFaceDetectorOptions())
+                .withFaceLandmarks()
+                .withAgeAndGender()
+                .withFaceExpressions()
+                .withFaceDescriptor()
+                .then(res => {
+                    resolve(res ? res : null);
+                });
         });
     },
     detectionGenderAndAge: function (element) {
@@ -81,47 +86,29 @@ const Face = {
                 });
         });
     },
-    classFace: function (element, name, matcherClass, minConfidence = 0.5) {
+    classFace: function (faceData, faceName, matcherClass) {
         return new Promise((resolve, reject) => {
             let faceMatcher;
-            faceapi.detectSingleFace(element).withFaceLandmarks()
-                .withFaceDescriptor()
-                .then(res => {
-                    if (res) {
-                        const descriptorsArr = [];
-                        descriptorsArr.push(res.descriptor);
-                        const opt = new faceapi.LabeledFaceDescriptors(
-                            name,
-                            descriptorsArr
-                        );
-                        if (matcherClass) {
-                            matcherClass._labeledDescriptors.push(opt);
-                            faceMatcher = matcherClass;
-                        } else {
-                            faceMatcher = new faceapi.FaceMatcher(opt);
-                        }
-                        resolve(faceMatcher);
-                    } else {
-                        resolve('');
-                    }
-                });
+            const descriptorsArr = [];
+            descriptorsArr.push(faceData.descriptor);
+            const opt = new faceapi.LabeledFaceDescriptors(
+                faceName,
+                descriptorsArr
+            );
+            if (matcherClass) {
+                matcherClass._labeledDescriptors.push(opt);
+                faceMatcher = matcherClass;
+            } else {
+                faceMatcher = new faceapi.FaceMatcher(opt);
+            }
+            resolve(faceMatcher);
+            
         });
     },
-    faceRecognition: function (element, faceMatcher, minConfidence = 0.45) {
+    faceRecognition: function (faceData, faceMatcher, minConfidence = 0.45) {
         return new Promise((resolve, reject) => {
-            // const options = new faceapi.SsdMobilenetv1Options({ minConfidence: minConfidence})
-            faceapi.detectSingleFace(element).withFaceLandmarks()
-                .withFaceDescriptor()
-                .then(res => {
-                // res = res.length > 0 ? res[0] : null;
-                    if (res) {
-                        const bestMatch = faceMatcher.findBestMatch(res.descriptor);
-                    
-                        resolve(bestMatch._distance > minConfidence ? '' : bestMatch._label);
-                    } else {
-                        resolve('');
-                    }
-                });
+            const bestMatch = faceMatcher.findBestMatch(faceData.descriptor);
+            resolve(bestMatch._distance > minConfidence ? '' : bestMatch._label);
         });
     }
 };

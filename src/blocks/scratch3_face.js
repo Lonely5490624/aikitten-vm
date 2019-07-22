@@ -36,6 +36,8 @@ class Scratch3FaceBlocks {
          */
         this._counter = 0;
 
+        this._currentFace = null;
+
         this.faceGroup = {};
         this.searchResult = '';
 
@@ -87,47 +89,34 @@ class Scratch3FaceBlocks {
 
     detectFace (args, util) {
         if (!this.runtime.ioDevices.video.provider._video) {
+            this._currentFace = null;
             return;
         }
         Face.detectionFace(this.runtime.ioDevices.video.provider._video).then(res => {
             if (res) {
+                this._currentFace = res;
                 util.startHats('face_whendetectedface');
+            } else {
+                this._currentFace = res;
             }
         });
     }
 
     detectGender (args) {
-        if (!this.runtime.ioDevices.video.provider._video) {
-            return;
-        }
-        const gender = args.GENDER;
-        return new Promise((resolve, reject) => {
-            Face.detectionGenderAndAge(this.runtime.ioDevices.video.provider._video).then(res => {
-                resolve(res.gender === gender);
-            });
-        });
+        if (!this._currentFace) return;
+        return this._currentFace.gender === args.GENDER || null;
     }
 
     detectAge () {
-        if (!this.runtime.ioDevices.video.provider._video) {
-            return;
-        }
-        return new Promise((resolve, reject) => {
-            Face.detectionGenderAndAge(this.runtime.ioDevices.video.provider._video).then(res => {
-                resolve(parseInt(res.age, 10));
-            });
-        });
+        if (!this._currentFace) return;
+        return parseInt(this._currentFace.age, 10) || null;
     }
     
     detectExpression () {
-        if (!this.runtime.ioDevices.video.provider._video) {
-            return;
-        }
-        return new Promise((resolve, reject) => {
-            Face.detectionFaceExpressions(this.runtime.ioDevices.video.provider._video).then(res => {
-                resolve(expressTrans[this._getViewerLanguageCode()][res] || '');
-            });
-        });
+        if (!this._currentFace) return;
+        const expressions = this._currentFace.expressions;
+        const express = Object.keys(expressions).find(item => expressions[item] > 0.5);
+        return expressTrans[this._getViewerLanguageCode()][express] || null;
     }
 
     createFaceGroup (args) {
@@ -136,13 +125,10 @@ class Scratch3FaceBlocks {
     }
 
     addFaceToGroup (args) {
-        if (!this.runtime.ioDevices.video.provider._video) {
-            return;
-        }
         const group = args.GROUP;
         const name = args.FACE;
         return new Promise((resolve, reject) => {
-            Face.classFace(this.runtime.ioDevices.video.provider._video, name, this.faceGroup[group]).then(res => {
+            Face.classFace(this._currentFace, name, this.faceGroup[group]).then(res => {
                 this.faceGroup[group] = res;
                 resolve();
             });
@@ -150,12 +136,9 @@ class Scratch3FaceBlocks {
     }
 
     searchGroup (args, util) {
-        if (!this.runtime.ioDevices.video.provider._video) {
-            return;
-        }
         const group = args.GROUP;
         if (this.faceGroup[group]) {
-            Face.faceRecognition(this.runtime.ioDevices.video.provider._video, this.faceGroup[group]).then(res => {
+            Face.faceRecognition(this._currentFace, this.faceGroup[group]).then(res => {
                 if (res) {
                     util.startHats('face_whensearchedface', {
                         TEXT: res
@@ -165,6 +148,7 @@ class Scratch3FaceBlocks {
                 util.startHats('face_whensearchend');
             })
                 .catch(() => {
+                    this.searchResult = '';
                     util.startHats('face_whensearchend');
                 });
         } else {

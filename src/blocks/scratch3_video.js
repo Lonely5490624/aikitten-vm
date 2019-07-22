@@ -286,9 +286,14 @@ class Scratch3VideoSensingBlocks {
     }
 
     controlVideo (args) {
-        if (args.STATUS === 'ON') {
+        if (args.STATUS === 'OFF') {
+            this.runtime.ioDevices.video.disableVideo();
+            this.videoEle = null;
+        } else {
             this.runtime.ioDevices.video.enableVideo().then(() => {
                 this.videoEle = this.runtime.ioDevices.video.provider._video;
+                // Mirror if state is ON. Do not mirror if state is ON_FLIPPED.
+                this.runtime.ioDevices.video.mirror = args.STATUS === 'ON';
 
                 // 当打开摄像头后执行循环操作，扩展里面是添加扩展后便执行
                 // Configure the video device with values from globally stored locations.
@@ -300,9 +305,6 @@ class Scratch3VideoSensingBlocks {
                 // Kick off looping the analysis logic.
                 this._loop();
             });
-        } else {
-            this.runtime.ioDevices.video.disableVideo();
-            this.videoEle = null;
         }
     }
 
