@@ -1,4 +1,5 @@
 const Video = require('../io/video');
+const iconWarn = require('../static/icon-warning.svg');
 
 const bankCardType = {
     1: '储蓄卡',
@@ -90,7 +91,7 @@ class AikittenTextDetect {
     bankCardDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
-            window.Toast.error('请输入正确的网络图片地址', 3000);
+            window.Toast.error('请输入正确的网络图片地址', 3000, iconWarn);
             return;
         }
         return new Promise((resolve, reject) => {
@@ -163,7 +164,7 @@ class AikittenTextDetect {
     idCardDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
-            window.Toast.error('请输入正确的网络图片地址', 3000);
+            window.Toast.error('请输入正确的网络图片地址', 3000, iconWarn);
             return;
         }
         return new Promise((resolve, reject) => {
@@ -218,7 +219,7 @@ class AikittenTextDetect {
     licensePlateDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
-            window.Toast.error('请输入正确的网络图片地址', 3000);
+            window.Toast.error('请输入正确的网络图片地址', 3000, iconWarn);
             return;
         }
         return new Promise((resolve, reject) => {
@@ -254,7 +255,7 @@ class AikittenTextDetect {
     imageTextDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
-            window.Toast.error('请输入正确的网络图片地址', 3000);
+            window.Toast.error('请输入正确的网络图片地址', 3000, iconWarn);
             return;
         }
         return new Promise((resolve, reject) => {
