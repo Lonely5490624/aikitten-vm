@@ -1,6 +1,5 @@
 const Resampler = require('../util/resampler.js');
 const BUFSIZE = 8192;
-const accessTokenVoice = '24.78c4da20d321cd28951f324f51389ce3.2592000.1564277312.282335-16664731';
 
 class AikittenVoice {
     constructor (runtime) {
@@ -102,7 +101,7 @@ class AikittenVoice {
                 len: dataLength,
                 speech: base64
             };
-            fetch('http://localhost:8081/audio2text', {
+            fetch('http://localhost:8081/aikitten/audio2text', {
                 body: JSON.stringify(reqJson),
                 headers: {
                     'content-type': 'application/json'

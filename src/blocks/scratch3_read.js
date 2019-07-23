@@ -28,7 +28,7 @@ class AikittenRead {
 
     readText (args) {
         return new Promise((resolve, reject) => {
-            fetch(`http://localhost:8081/text2audio?text=${args.TEXT}&spd=${this.speed}&pit=${this.tone}&vol=${this.vol}&per=${this.voice}`)
+            fetch(`http://localhost:8081/aikitten/text2audio?text=${args.TEXT}&spd=${this.speed}&pit=${this.tone}&vol=${this.vol}&per=${this.voice}`)
                 .then(res => res.blob())
                 .then(res => {
                     if (res.type !== 'audio/mp3') {
