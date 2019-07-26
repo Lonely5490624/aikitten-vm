@@ -48,7 +48,7 @@ class AikittenTextDetect {
             text1,
             text2
         };
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             fetch('http://localhost:8081/aikitten/textSimilarity', {
                 body: JSON.stringify(reqJson),
                 headers: {
@@ -70,7 +70,7 @@ class AikittenTextDetect {
         const reqJson = {
             base64: imgBase64
         };
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             fetch('http://localhost:8081/aikitten/bankCardDetection', {
                 body: JSON.stringify(reqJson),
                 headers: {
@@ -91,10 +91,10 @@ class AikittenTextDetect {
     bankCardDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
-            window.Toast.error('请输入正确的网络图片地址', 3000, iconWarn);
+            window.Toast.error('网络地址格式不正确！', 3000, iconWarn);
             return;
         }
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             const reqJson = {
                 base64: imageSrc,
                 isUrl: true
@@ -107,7 +107,6 @@ class AikittenTextDetect {
                 method: 'POST'
             }).then(res => res.json())
                 .then(res => {
-                    console.log(res);
                     this.bankCardInfo = res.result;
                     resolve();
                 })
@@ -142,7 +141,7 @@ class AikittenTextDetect {
         const reqJson = {
             base64: imgBase64
         };
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             fetch('http://localhost:8081/aikitten/idCardDetection', {
                 body: JSON.stringify(reqJson),
                 headers: {
@@ -151,7 +150,6 @@ class AikittenTextDetect {
                 method: 'POST'
             }).then(res => res.json())
                 .then(res => {
-                    console.log(res);
                     this.idCardInfo = res.words_result;
                     resolve();
                 })
@@ -164,10 +162,10 @@ class AikittenTextDetect {
     idCardDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
-            window.Toast.error('请输入正确的网络图片地址', 3000, iconWarn);
+            window.Toast.error('网络地址格式不正确！', 3000, iconWarn);
             return;
         }
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             const reqJson = {
                 base64: imageSrc,
                 isUrl: true
@@ -180,7 +178,6 @@ class AikittenTextDetect {
                 method: 'POST'
             }).then(res => res.json())
                 .then(res => {
-                    console.log(res);
                     this.idCardInfo = res.words_result;
                     resolve();
                 })
@@ -193,22 +190,22 @@ class AikittenTextDetect {
     getIdCardInfo () {
         if (this.idCardInfo) {
             const arr = [];
-            if (this.idCardInfo['姓名'].words) {
+            if (this.idCardInfo['姓名'] && this.idCardInfo['姓名'].words) {
                 arr.push(this.idCardInfo['姓名'].words);
             }
-            if (this.idCardInfo['公民身份号码'].words) {
+            if (this.idCardInfo['公民身份号码'] && this.idCardInfo['公民身份号码'].words) {
                 arr.push(this.idCardInfo['公民身份号码'].words);
             }
-            if (this.idCardInfo['出生'].words) {
+            if (this.idCardInfo['出生'] && this.idCardInfo['出生'].words) {
                 arr.push(this.idCardInfo['出生'].words);
             }
-            if (this.idCardInfo['性别'].words) {
+            if (this.idCardInfo['性别'] && this.idCardInfo['性别'].words) {
                 arr.push(this.idCardInfo['性别'].words);
             }
-            if (this.idCardInfo['民族'].words) {
+            if (this.idCardInfo['民族'] && this.idCardInfo['民族'].words) {
                 arr.push(this.idCardInfo['民族'].words);
             }
-            if (this.idCardInfo['住址'].words) {
+            if (this.idCardInfo['住址'] && this.idCardInfo['住址'].words) {
                 arr.push(this.idCardInfo['住址'].words);
             }
             return arr.join();
@@ -219,10 +216,10 @@ class AikittenTextDetect {
     licensePlateDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
-            window.Toast.error('请输入正确的网络图片地址', 3000, iconWarn);
+            window.Toast.error('网络地址格式不正确！', 3000, iconWarn);
             return;
         }
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             const reqJson = {
                 base64: imageSrc,
                 isUrl: true
@@ -235,7 +232,6 @@ class AikittenTextDetect {
                 method: 'POST'
             }).then(res => res.json())
                 .then(res => {
-                    console.log(res);
                     this.licensePlateInfo = res.words_result;
                     resolve();
                 })
@@ -255,10 +251,10 @@ class AikittenTextDetect {
     imageTextDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
-            window.Toast.error('请输入正确的网络图片地址', 3000, iconWarn);
+            window.Toast.error('网络地址格式不正确！', 3000, iconWarn);
             return;
         }
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             const reqJson = {
                 base64: imageSrc
             };
@@ -270,7 +266,6 @@ class AikittenTextDetect {
                 method: 'POST'
             }).then(res => res.json())
                 .then(res => {
-                    console.log(res);
                     this.imageTextInfo = res.words_result;
                     resolve();
                 })
