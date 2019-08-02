@@ -104,7 +104,7 @@ class Scratch3FaceBlocks {
 
     detectGender (args) {
         if (!this._currentFace) return;
-        return this._currentFace.gender === args.GENDER || null;
+        return this._currentFace.gender === args.GENDER;
     }
 
     detectAge () {
