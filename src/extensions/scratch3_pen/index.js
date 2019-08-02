@@ -61,7 +61,7 @@ class Scratch3PenBlocks {
          * @type {int}
          * @private
          */
-        this._penSkinId = -1;
+        this._penSkinId = window.MLPenSkinId || -1;
 
         this._onTargetCreated = this._onTargetCreated.bind(this);
         this._onTargetMoved = this._onTargetMoved.bind(this);
@@ -649,7 +649,7 @@ class Scratch3PenBlocks {
      */
     changePenSizeBy (args, util) {
         const penAttributes = this._getPenState(util.target).penAttributes;
-        penAttributes.diameter = this._clampPenSize(penAttributes.diameter + Cast.toNumber(args.SIZE));
+        window.mlObject.defaultDiameter = penAttributes.diameter = this._clampPenSize(penAttributes.diameter + Cast.toNumber(args.SIZE));
     }
 
     /**
@@ -660,7 +660,7 @@ class Scratch3PenBlocks {
      */
     setPenSizeTo (args, util) {
         const penAttributes = this._getPenState(util.target).penAttributes;
-        penAttributes.diameter = this._clampPenSize(Cast.toNumber(args.SIZE));
+        window.mlObject.defaultDiameter = penAttributes.diameter = this._clampPenSize(Cast.toNumber(args.SIZE));
     }
 
     /* LEGACY OPCODES */
