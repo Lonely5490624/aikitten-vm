@@ -129,8 +129,11 @@ class Scratch3PenBlocks {
      * @private
      */
     _getPenLayerID () {
+        // 如果全局变量存在MLPenSkinId则直接返回，否则创建好后设置为全局MLPenSkinId
+        if (window.MLPenSkinId) return window.MLPenSkinId;
+
         if (this._penSkinId < 0 && this.runtime.renderer) {
-            this._penSkinId = this.runtime.renderer.createPenSkin();
+            window.MLPenSkinId = this._penSkinId = this.runtime.renderer.createPenSkin();
             this._penDrawableId = this.runtime.renderer.createDrawable(StageLayering.PEN_LAYER);
             this.runtime.renderer.updateDrawableProperties(this._penDrawableId, {skinId: this._penSkinId});
         }

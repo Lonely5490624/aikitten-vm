@@ -95,7 +95,7 @@ class AikittenVoice {
             const reqJson = {
                 format: 'pcm',
                 rate: 16000,
-                dev_pid: 1537,
+                dev_pid: 1536,
                 channel: 1,
                 cuid: 'aikitten',
                 len: dataLength,
