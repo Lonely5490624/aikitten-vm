@@ -114,10 +114,6 @@ let Ml = {
                         curModel.generate(draw)
                     }
                 }, 5)
-
-
-
-
             }
             if (model && model.model.info.name == type) {
 
@@ -130,12 +126,46 @@ let Ml = {
                     resolve(curModel)
                 })
             }
-
-
-
         })
-
-
+    },
+    KNNCtreateClassifier: (ele, classfier, name, featureExtractor) => {
+        return new Promise((resolve, reject) => {
+            if (featureExtractor) {
+                const KNNClassfier = classfier ? classfier : ml5.KNNClassifier();
+                const features = featureExtractor.infer(ele);
+                KNNClassfier.addExample(features, name);
+                let res = {
+                    featureExtractor: featureExtractor,
+                    KNNClassfier: KNNClassfier,
+                }
+                resolve(res)
+            } else {
+                const featureExtractor = ml5.featureExtractor("MobileNet", () => {
+                    const KNNClassfier = classfier ? classfier : ml5.KNNClassifier();
+                    const features = featureExtractor.infer(ele);
+                    KNNClassfier.addExample(features, name);
+                    let res = {
+                        featureExtractor: featureExtractor,
+                        KNNClassfier: KNNClassfier,
+                    }
+                    resolve(res)
+                });
+            }
+        })
+    },
+    KNNClassify: (ele, KNNClassfier, featureExtractor) => {
+        return new Promise((resolve, reject) => {
+            const features = featureExtractor.infer(ele);
+            KNNClassfier.classify(features, function (err, result) {
+                resolve(result.label)
+            });
+        })
+    },
+    KNNClear:(KNNClassfier)=>{
+        return new Promise((resolve, reject) => {
+            KNNClassfier.clearAllLabels();
+            resolve(KNNClassfier)
+        })
     }
 
 }

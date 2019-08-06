@@ -1,4 +1,3 @@
-const Video = require('../io/video');
 const Ml = require('../engine/Ml').default;
 const Clone = require('../util/clone');
 const RenderedTarget = require('../sprites/rendered-target');
@@ -27,6 +26,7 @@ class AikittenMachineLearning {
         this.x = 0;
         this.y = 0;
         this._classifier = null; // 特征集，这里只用这一个特征集
+        this._featureExtractor = null;
 
         this._gotStroke = this._gotStroke.bind(this);
         this._onTargetMoved = this._onTargetMoved.bind(this);
@@ -72,8 +72,11 @@ class AikittenMachineLearning {
         videoEle.width = 480;
         videoEle.height = 360;
         return new Promise(resolve => {
-            Ml.ml5FeatureExtractor(videoEle, label, this._classifier).then(res => {
-                this._classifier = res;
+            Ml.KNNCtreateClassifier(videoEle, this._classifier, label, this._featureExtractor).then(res => {
+                if (res && res.featureExtractor && res.KNNClassfier) {
+                    this._classifier = res.KNNClassfier;
+                    this._featureExtractor = res.featureExtractor;
+                }
                 resolve();
             });
         });
@@ -82,9 +85,9 @@ class AikittenMachineLearning {
     labelOfFeature () {
         if (!this.runtime.ioDevices.video.provider.video) return;
         const videoEle = this.runtime.ioDevices.video.provider.video;
-        if (!this._classifier) return;
+        if (!this._classifier || !this._featureExtractor) return;
         return new Promise(resolve => {
-            Ml.ml5Classify(videoEle, this._classifier).then(res => {
+            Ml.KNNClassify(videoEle, this._classifier, this._featureExtractor).then(res => {
                 resolve(res);
             });
         });
