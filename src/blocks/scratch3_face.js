@@ -55,6 +55,7 @@ class Scratch3FaceBlocks {
     getPrimitives () {
         return {
             face_detectface: this.detectFace,
+            face_detectgenderstring: this.detectGenderString,
             face_detectgender: this.detectGender,
             face_detectage: this.detectAge,
             face_detectexpression: this.detectExpression,
@@ -79,14 +80,6 @@ class Scratch3FaceBlocks {
         };
     }
 
-    controlVideo (args) {
-        if (args.STATUS === 'ON') {
-            this.runtime.ioDevices.video.enableVideo();
-        } else {
-            this.runtime.ioDevices.video.disableVideo();
-        }
-    }
-
     detectFace (args, util) {
         if (!this.runtime.ioDevices.video.provider._video) {
             this._currentFace = null;
@@ -100,6 +93,15 @@ class Scratch3FaceBlocks {
                 this._currentFace = res;
             }
         });
+    }
+
+    detectGenderString () {
+        if (!this._currentFace) return;
+        const transfer = {
+            male: '男性',
+            female: '女性'
+        };
+        return transfer[this._currentFace.gender];
     }
 
     detectGender (args) {
@@ -125,6 +127,7 @@ class Scratch3FaceBlocks {
     }
 
     addFaceToGroup (args) {
+        if (!this._currentFace) return;
         const group = args.GROUP;
         const name = args.FACE;
         return new Promise((resolve, reject) => {
