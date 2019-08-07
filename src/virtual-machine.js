@@ -1525,6 +1525,18 @@ class VirtualMachine extends EventEmitter {
         }
         return null;
     }
+
+    removeExtension (targetId) {
+        if (this.extensionManager.isExtensionLoaded(targetId)){
+            for (const t in this.runtime._blockInfo) {
+                if (this.runtime._blockInfo[t].id === targetId) {
+                    this.runtime.removeExtensionDevie(targetId);
+                    this.runtime._blockInfo.splice(t, 1);
+                    this.extensionManager.removeExtension(targetId);
+                }
+            }
+        }
+    }
 }
 
 module.exports = VirtualMachine;

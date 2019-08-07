@@ -164,6 +164,17 @@ class ExtensionManager {
         });
     }
 
+    removeExtension (extensionId) {
+        const t = this._loadedExtensions.get(extensionId);
+        if (t && dispatch.services.hasOwnProperty(t)){
+            if (dispatch.services[t].dispose) {
+                dispatch.services[t].dispose();
+                delete dispatch.services[t];
+            }
+            this._loadedExtensions.delete(extensionId);
+        }
+    }
+
     /**
      * Regenerate blockinfo for any loaded extensions
      * @returns {Promise} resolved once all the extensions have been reinitialized

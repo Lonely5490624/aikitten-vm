@@ -1315,6 +1315,13 @@ class Runtime extends EventEmitter {
         this.peripheralExtensions[extensionId] = extension;
     }
 
+    removeExtensionDevie (extensionId) {
+        if (this.peripheralExtensions.hasOwnProperty(extensionId)) {
+            this.disconnectPeripheral(extensionId);
+            delete this.peripheralExtensions[extensionId];
+        }
+    }
+
     /**
      * Tell the specified extension to scan for a peripheral.
      * @param {string} extensionId - the id of the extension.
