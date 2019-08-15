@@ -1289,7 +1289,7 @@ class Runtime extends EventEmitter {
                 statusButtonXML = 'showStatusButton="true"';
             }
 
-            xmlParts.push(`<category name="${name}" id="${categoryInfo.id}"
+            xmlParts.push(`<category name="${name}" id="${categoryInfo.id}" isExtension="true"
                 ${statusButtonXML} ${colorXML} ${menuIconXML} ${blockIconXML}>`);
             xmlParts.push.apply(xmlParts, paletteBlocks.map(block => block.xml));
             xmlParts.push('</category>');
