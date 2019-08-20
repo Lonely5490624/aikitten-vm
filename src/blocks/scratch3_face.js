@@ -42,8 +42,7 @@ class Scratch3FaceBlocks {
         this.faceGroup = {};
         this.searchResult = '';
         this.isFirst = true;
-
-        Face.loadModel();
+        this.runtime.Face = Face;
     }
 
     _getViewerLanguageCode () {
