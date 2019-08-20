@@ -1,5 +1,6 @@
 const formatMessage = require('format-message');
 const Face = require('./Face').default;
+const iconDetectCover = require('../static/detect-cover.png');
 
 const expressTrans = {
     'en': {
@@ -40,6 +41,7 @@ class Scratch3FaceBlocks {
 
         this.faceGroup = {};
         this.searchResult = '';
+        this.isFirst = true;
 
         Face.loadModel();
     }
@@ -85,13 +87,41 @@ class Scratch3FaceBlocks {
             this._currentFace = null;
             return;
         }
-        Face.detectionFace(this.runtime.ioDevices.video.provider._video).then(res => {
-            if (res) {
-                this._currentFace = res;
-                util.startHats('face_whendetectedface');
-            } else {
-                this._currentFace = res;
-            }
+        let detectCover = null;
+        if (this.isFirst) {
+            detectCover = document.createElement('div');
+            const detectImg = document.createElement('img');
+            detectImg.src = iconDetectCover;
+            detectCover.style.position = 'fixed';
+            detectCover.style.top = 0;
+            detectCover.style.left = 0;
+            detectCover.style.right = 0;
+            detectCover.style.bottom = 0;
+            detectCover.style.zIndex = 9999;
+            detectCover.style.backgroundColor = 'rgba(0,0,0,.7)';
+            detectCover.style.display = 'flex';
+            detectCover.style.justifyContent = 'center';
+            detectCover.style.alignItems = 'center';
+            detectCover.appendChild(detectImg);
+            document.body.appendChild(detectCover);
+        }
+        return new Promise(resolve => {
+            setTimeout(() => {
+                Face.detectionFace(this.runtime.ioDevices.video.provider._video).then(res => {
+                    if (res) {
+                        this._currentFace = res;
+                        util.startHats('face_whendetectedface');
+                        this.isFirst = false;
+                        if (detectCover) document.body.removeChild(detectCover);
+                        resolve();
+                    } else {
+                        this._currentFace = res;
+                        this.isFirst = false;
+                        if (detectCover) document.body.removeChild(detectCover);
+                        resolve();
+                    }
+                });
+            }, 100);
         });
     }
 
