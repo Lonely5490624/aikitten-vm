@@ -101,6 +101,7 @@ class RenderedTarget extends Target {
          * @type {boolean}
          */
         this.visible = true;
+        this.locked = false;
 
         /**
          * Size of rendered target as a percent of costume size.
@@ -381,6 +382,14 @@ class RenderedTarget extends Target {
                 this.runtime.requestRedraw();
             }
         }
+        this.runtime.requestTargetsUpdate(this);
+    }
+
+    setLock (lock) {
+        if (this.isStage) {
+            return;
+        }
+        this.locked = !!lock;
         this.runtime.requestTargetsUpdate(this);
     }
 
@@ -1092,6 +1101,9 @@ class RenderedTarget extends Target {
         if (data.hasOwnProperty('size')) {
             this.setSize(data.size);
         }
+        if (data.hasOwnProperty('locked')) {
+            this.setLock(data.locked);
+        }
     }
 
     /**
@@ -1137,6 +1149,7 @@ class RenderedTarget extends Target {
             textToSpeechLanguage: this.textToSpeechLanguage,
             tempo: this.tempo,
             volume: this.volume,
+            locked: this.locked,
             videoTransparency: this.videoTransparency,
             videoState: this.videoState
 
