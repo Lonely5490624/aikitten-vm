@@ -13,16 +13,20 @@ class AikittenImageDetect {
     getPrimitives () {
         return {
             imageDetect_generaldetectvideo: this.generalDetectVideo,
+            imageDetect_generaldetectupload: this.generalDetectUpload,
             imageDetect_generaldetectsrc: this.generalDetectSrc,
             imageDetect_generalname: this.getGeneralName,
             imageDetect_generaltype: this.getGeneralType,
             imageDetect_animaldetectvideo: this.animalDetectVideo,
+            imageDetect_animaldetectupload: this.animalDetectUpload,
             imageDetect_animaldetectsrc: this.animalDetectSrc,
             imageDetect_animalname: this.getAnimalName,
             imageDetect_plantdetectvideo: this.plantDetectVideo,
+            imageDetect_plantdetectupload: this.plantDetectUpload,
             imageDetect_plantdetectsrc: this.plantDetectSrc,
             imageDetect_plantname: this.getPlantName,
             imageDetect_ingredientdetectvideo: this.ingredientDetectVideo,
+            imageDetect_ingredientdetectupload: this.ingredientDetectUpload,
             imageDetect_ingredientdetectsrc: this.ingredientDetectSrc,
             imageDetect_ingredientname: this.getIngredientName
         };
@@ -72,6 +76,47 @@ class AikittenImageDetect {
                     resolve();
                 });
         });
+    }
+
+    generalDetectUpload () {
+        window.openImageUpload('通用物体检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        image: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/generalDetect', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            this.generalResult = res.result ? res.result[0] : null;
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
     }
 
     generalDetectSrc (args) {
@@ -145,6 +190,53 @@ class AikittenImageDetect {
         });
     }
 
+    animalDetectUpload (args, util) {
+        window.openImageUpload('动物检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        image: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/animalDetect', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            if (res && res.result && res.result[0].name !== '非动物') {
+                                this.animalResult = res.result[0];
+                                util.startHats('imageDetect_whendetectedanimal');
+                                resolve();
+                            } else {
+                                this.animalResult = null;
+                                resolve();
+                            }
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
+    }
+
     animalDetectSrc (args, util) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
@@ -213,6 +305,53 @@ class AikittenImageDetect {
                     resolve();
                 });
         });
+    }
+
+    plantDetectUpload (args, util) {
+        window.openImageUpload('植物检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        image: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/plantDetect', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            if (res && res.result && res.result[0].name !== '非植物') {
+                                this.plantResult = res.result[0];
+                                util.startHats('imageDetect_whendetectedplant');
+                                resolve();
+                            } else {
+                                this.plantResult = null;
+                                resolve();
+                            }
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
     }
 
     plantDetectSrc (args, util) {
@@ -285,6 +424,53 @@ class AikittenImageDetect {
         });
     }
 
+    ingredientDetectUpload (args, util) {
+        window.openImageUpload('果疏检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        image: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/ingredientDetect', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            if (res && res.result && res.result[0].name !== '非果蔬食材') {
+                                this.ingredientResult = res.result[0];
+                                util.startHats('imageDetect_whendetectedingredient');
+                                resolve();
+                            } else {
+                                this.ingredientResult = null;
+                                resolve();
+                            }
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
+    }
+
     ingredientDetectSrc (args, util) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
@@ -304,19 +490,6 @@ class AikittenImageDetect {
                 method: 'POST'
             }).then(res => res.json())
                 .then(res => {
-                    // if (res && res.result && res.result[0].name !== '非果蔬食材') {
-                    //     this.ingredientResult = res.result[0];
-                    //     util.startHats('imageDetect_whendetectedingredient');
-                    //     resolve();
-                    // } else {
-                    //     if (res.result[1]) {
-                    //         this.ingredientResult = res.result[1];
-                    //         util.startHats('imageDetect_whendetectedingredient');
-                    //     } else {
-                    //         this.ingredientResult = null;
-                    //     }
-                    //     resolve();
-                    // }
                     if (res && res.result && res.result[0].name !== '非果蔬食材') {
                         this.ingredientResult = res.result[0];
                         util.startHats('imageDetect_whendetectedingredient');
