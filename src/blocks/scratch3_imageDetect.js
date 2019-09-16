@@ -8,6 +8,8 @@ class AikittenImageDetect {
         this.generalResult = null;
         this.animalResult = null;
         this.ingredientResult = null;
+        this.dishResult = null;
+        this.landmarkResult = null;
     }
 
     getPrimitives () {
@@ -28,7 +30,11 @@ class AikittenImageDetect {
             imageDetect_ingredientdetectvideo: this.ingredientDetectVideo,
             imageDetect_ingredientdetectupload: this.ingredientDetectUpload,
             imageDetect_ingredientdetectsrc: this.ingredientDetectSrc,
-            imageDetect_ingredientname: this.getIngredientName
+            imageDetect_ingredientname: this.getIngredientName,
+            imageDetect_dishdetectupload: this.dishDetectUpload,
+            imageDetect_dishname: this.getDishName,
+            imageDetect_landmarkdetectupload: this.landmarkDetectUpload,
+            imageDetect_landmarkname: this.getLandmarkName
         };
     }
 
@@ -41,6 +47,12 @@ class AikittenImageDetect {
                 restartExistingThreads: true
             },
             imageDetect_whendetectedingredient: {
+                restartExistingThreads: true
+            },
+            imageDetect_whendetecteddish: {
+                restartExistingThreads: true
+            },
+            imageDetect_whendetectedlandmark: {
                 restartExistingThreads: true
             }
         };
@@ -508,6 +520,114 @@ class AikittenImageDetect {
     getIngredientName () {
         if (this.ingredientResult) {
             return this.ingredientResult.name;
+        }
+        return;
+    }
+
+    dishDetectUpload (args, util) {
+        window.openImageUpload('菜品检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        image: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/dishDetect', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            if (res && res.result && res.result[0].name !== '非菜') {
+                                this.dishResult = res.result[0];
+                                util.startHats('imageDetect_whendetecteddish');
+                                resolve();
+                            } else {
+                                this.dishResult = null;
+                                resolve();
+                            }
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
+    }
+
+    getDishName () {
+        if (this.dishResult) {
+            return this.dishResult.name;
+        }
+        return;
+    }
+
+    landmarkDetectUpload (args, util) {
+        window.openImageUpload('地标检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        image: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/landmarkDetect', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            if (res && res.result && res.result.landmark) {
+                                this.landmarkResult = res.result;
+                                util.startHats('imageDetect_whendetectedlandmark');
+                                resolve();
+                            } else {
+                                this.landmarkResult = null;
+                                resolve();
+                            }
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
+    }
+
+    getLandmarkName () {
+        if (this.landmarkResult) {
+            return this.landmarkResult.landmark;
         }
         return;
     }

@@ -20,14 +20,18 @@ class AikittenTextDetect {
         return {
             textDetect_similarity: this.similarity,
             textDetect_bankcarddetectionvideo: this.bankCardDetectionVideo,
+            textDetect_bankcarddetectionupload: this.bankCardDetectionUpload,
             textDetect_bankcarddetectionsrc: this.bankCardDetectionSrc,
             textDetect_bankcardinfo: this.getBacnCardInfo,
             textDetect_idcarddetectionvideo: this.idCardDetectionVideo,
+            textDetect_idcarddetectionupload: this.idCardDetectionUpload,
             textDetect_idcarddetectionsrc: this.idCardDetectionSrc,
             textDetect_idcardinfo: this.getIdCardInfo,
             textDetect_licenseplatedetectionsrc: this.licensePlateDetectionSrc,
+            textDetect_licenseplatedetectionupload: this.licensePlateDetectionUpload,
             textDetect_licenseplateinfo: this.getLicensePlateInfo,
             textDetect_imagetextdetectionsrc: this.imageTextDetectionSrc,
+            textDetect_imagetextdetectionupload: this.imageTextDetectionUpload,
             textDetect_imagetextinfo: this.getImageText
         };
     }
@@ -86,6 +90,47 @@ class AikittenTextDetect {
                     resolve();
                 });
         });
+    }
+
+    bankCardDetectionUpload () {
+        window.openImageUpload('银行卡检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        base64: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/bankCardDetection', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            this.bankCardInfo = res.result;
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
     }
 
     bankCardDetectionSrc (args) {
@@ -159,6 +204,47 @@ class AikittenTextDetect {
         });
     }
 
+    idCardDetectionUpload () {
+        window.openImageUpload('身份证检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        base64: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/idCardDetection', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            this.idCardInfo = res.words_result;
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
+    }
+
     idCardDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
@@ -213,6 +299,47 @@ class AikittenTextDetect {
         return;
     }
 
+    licensePlateDetectionUpload () {
+        window.openImageUpload('车牌号检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const reqJson = {
+                        base64: e.newValue
+                    };
+                    fetch('http://localhost:8081/aikitten/licensePlateDetection', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            this.licensePlateInfo = res.words_result;
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
+    }
+
     licensePlateDetectionSrc (args) {
         const imageSrc = args.SRC;
         if (!/^(http:\/\/|https:\/\/)/.test(imageSrc)) {
@@ -246,6 +373,48 @@ class AikittenTextDetect {
             return this.licensePlateInfo.number;
         }
         return;
+    }
+
+    imageTextDetectionUpload () {
+        window.openImageUpload('图片内文字检测');
+        return new Promise((resolve => {
+            /**
+             * 需要监听storage的变化
+             * 并且在该方法执行完后移除事件监听，避免重复执行
+             */
+
+            const handleEvent = e => {
+                if (e.newValue) {
+                    const base64 = e.newValue.replace(/data:image\/(.*);base64,/, '');
+                    const reqJson = {
+                        base64
+                    };
+                    fetch('http://localhost:8081/aikitten/webImageDetection', {
+                        body: JSON.stringify(reqJson),
+                        headers: {
+                            'content-type': 'application/json'
+                        },
+                        method: 'POST'
+                    }).then(res => res.json())
+                        .then(res => {
+                            this.imageTextInfo = res.words_result;
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        })
+                        .catch(() => {
+                            window.removeEventListener('setItemEvent', handleEvent);
+                            resolve();
+                        });
+                } else {
+                    /**
+                     * 这里else表示在上传的时候关闭了弹出框，这时也要监听，并且resolve让下一步继续执行
+                     */
+                    window.removeEventListener('setItemEvent', handleEvent);
+                    resolve();
+                }
+            };
+            window.addEventListener('setItemEvent', handleEvent);
+        }));
     }
 
     imageTextDetectionSrc (args) {
