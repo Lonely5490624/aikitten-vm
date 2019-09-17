@@ -110,6 +110,25 @@ const Face = {
             const bestMatch = faceMatcher.findBestMatch(faceData.descriptor);
             resolve(bestMatch._distance > minConfidence ? '' : bestMatch._label);
         });
+    },
+    faceMatchUpload: async function (image1, image2) {
+        const reference = await faceapi.detectSingleFace(image1, this.getFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+        const result = await faceapi.detectSingleFace(image2, this.getFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceDescriptor();
+        return new Promise(resolve => {
+            if (result) {
+                const faceMatcher = new faceapi.FaceMatcher(result);
+                if (reference) {
+                    const bestMatch = faceMatcher.findBestMatch(reference.descriptor);
+                    resolve(bestMatch);
+                }
+                resolve();
+            }
+            resolve();
+        });
     }
 };
 
