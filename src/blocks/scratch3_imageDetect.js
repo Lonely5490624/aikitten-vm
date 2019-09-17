@@ -99,9 +99,9 @@ class AikittenImageDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        image: e.newValue
+                        image: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/generalDetect', {
                         body: JSON.stringify(reqJson),
@@ -211,9 +211,9 @@ class AikittenImageDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        image: e.newValue
+                        image: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/animalDetect', {
                         body: JSON.stringify(reqJson),
@@ -328,9 +328,9 @@ class AikittenImageDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        image: e.newValue
+                        image: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/plantDetect', {
                         body: JSON.stringify(reqJson),
@@ -445,9 +445,9 @@ class AikittenImageDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        image: e.newValue
+                        image: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/ingredientDetect', {
                         body: JSON.stringify(reqJson),
@@ -533,9 +533,9 @@ class AikittenImageDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        image: e.newValue
+                        image: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/dishDetect', {
                         body: JSON.stringify(reqJson),
@@ -587,9 +587,9 @@ class AikittenImageDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        image: e.newValue
+                        image: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/landmarkDetect', {
                         body: JSON.stringify(reqJson),

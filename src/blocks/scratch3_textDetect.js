@@ -101,9 +101,9 @@ class AikittenTextDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        base64: e.newValue
+                        base64: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/bankCardDetection', {
                         body: JSON.stringify(reqJson),
@@ -213,9 +213,9 @@ class AikittenTextDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        base64: e.newValue
+                        base64: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/idCardDetection', {
                         body: JSON.stringify(reqJson),
@@ -308,9 +308,9 @@ class AikittenTextDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
+                if (e.newValue1) {
                     const reqJson = {
-                        base64: e.newValue
+                        base64: e.newValue1
                     };
                     fetch('http://localhost:8081/aikitten/licensePlateDetection', {
                         body: JSON.stringify(reqJson),
@@ -384,8 +384,8 @@ class AikittenTextDetect {
              */
 
             const handleEvent = e => {
-                if (e.newValue) {
-                    const base64 = e.newValue.replace(/data:image\/(.*);base64,/, '');
+                if (e.newValue1) {
+                    const base64 = e.newValue1.replace(/data:image\/(.*);base64,/, '');
                     const reqJson = {
                         base64
                     };
