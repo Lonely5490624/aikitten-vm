@@ -1,5 +1,8 @@
+/* eslint-disable max-len */
+/* eslint-disable no-mixed-operators */
 const formatMessage = require('format-message');
 const Face = require('./Face').default;
+const StageLayering = require('../engine/stage-layering');
 const iconDetectCover = require('../static/detect-cover.png');
 
 const expressTrans = {
@@ -36,6 +39,7 @@ class Scratch3FaceBlocks {
          * @type {number}
          */
         this._counter = 0;
+        this._penSkinId = -1;
 
         this._currentFace = null;
 
@@ -86,13 +90,23 @@ class Scratch3FaceBlocks {
         };
     }
 
+    _getPenLayerID () {
+        if (this._penSkinId < 0 && this.runtime.renderer) {
+            this._penSkinId = this.runtime.renderer.createPenSkin();
+            this._penDrawableId = this.runtime.renderer.createDrawable(StageLayering.PEN_LAYER);
+            this.runtime.renderer.updateDrawableProperties(this._penDrawableId, {skinId: this._penSkinId});
+        }
+        return this._penSkinId;
+    }
+
     detectFace (args, util) {
+        const self = this;
         if (!this.runtime.ioDevices.video.provider._video) {
             this._currentFace = null;
             return;
         }
         let detectCover = null;
-        if (this.isFirst) {
+        if (self.isFirst) {
             detectCover = document.createElement('div');
             const detectImg = document.createElement('img');
             detectImg.src = iconDetectCover;
@@ -111,16 +125,76 @@ class Scratch3FaceBlocks {
         }
         return new Promise(resolve => {
             setTimeout(() => {
-                Face.detectionFace(this.runtime.ioDevices.video.provider._video).then(res => {
+                // const canvas = self.runtime.ioDevices.video.getFrame({format: 'canvas', dimensions: [640, 480]});
+                // document.body.appendChild(canvas);
+                // console.log(1111, canvas);
+                Face.detectionFace(self.runtime.ioDevices.video.provider._video).then(res => {
                     if (res) {
-                        this._currentFace = res;
+                        self._currentFace = res;
+                        // 这里使用画笔画一个人脸的轮廓
+                        const penState = {
+                            penDown: true,
+                            color: 66.66,
+                            saturation: 100,
+                            brightness: 100,
+                            transparency: 0,
+                            _shade: 50, // Used only for legacy `change shade by` blocks
+                            penAttributes: {
+                                color4f: [1, 0, 0, 1],
+                                diameter: 1
+                            }
+                        };
+                        const positions = res.landmarks.positions;
+                        const object = {
+                            face: positions.slice(0, 17),
+                            rightEyebrows: positions.slice(17, 22),
+                            leftEyebrows: positions.slice(22, 27),
+                            nose: positions.slice(27, 36),
+                            rightEye: positions.slice(36, 42),
+                            leftEye: positions.slice(42, 48),
+                            mouth: positions.slice(48)
+                        };
+                        for (const [key, val] of Object.entries(object)) {
+                            for (let i = 0; i < val.length; i++) {
+                                let oldX;
+                                let oldY;
+                                let newX;
+                                let newY;
+                                if (this.runtime.ioDevices.video.mirror) {
+                                    oldX = -(val[i].x / 1.333333 - 240);
+                                    oldY = -(val[i].y / 1.333333 - 180);
+                                    if (i === val.length - 1 && (key === 'rightEye' || key === 'leftEye' || key === 'mouth')) {
+                                        newX = -(val[0].x / 1.333333 - 240);
+                                        newY = -(val[0].y / 1.333333 - 180);
+                                    } else {
+                                        newX = -((val[i + 1] ? val[i + 1].x : val[i].x) / 1.333333 - 240);
+                                        newY = -((val[i + 1] ? val[i + 1].y : val[i].y) / 1.333333 - 180);
+                                    }
+                                } else {
+                                    oldX = val[i].x / 1.333333 - 240;
+                                    oldY = -(val[i].y / 1.333333 - 180);
+                                    if (i === val.length - 1 && (key === 'rightEye' || key === 'leftEye' || key === 'mouth')) {
+                                        newX = val[0].x / 1.333333 - 240;
+                                        newY = -(val[0].y / 1.333333 - 180);
+                                    } else {
+                                        newX = (val[i + 1] ? val[i + 1].x : val[i].x) / 1.333333 - 240;
+                                        newY = -((val[i + 1] ? val[i + 1].y : val[i].y) / 1.333333 - 180);
+                                    }
+                                }
+                                self.runtime.renderer.penLine(self._getPenLayerID(), penState.penAttributes, oldX, oldY, newX, newY);
+                            }
+                        }
+                        setTimeout(() => {
+                            self.runtime.renderer.penClear(self._getPenLayerID());
+                        }, 1000);
+
                         util.startHats('face_whendetectedface');
-                        this.isFirst = false;
+                        self.isFirst = false;
                         if (detectCover) document.body.removeChild(detectCover);
                         resolve();
                     } else {
-                        this._currentFace = res;
-                        this.isFirst = false;
+                        self._currentFace = res;
+                        self.isFirst = false;
                         if (detectCover) document.body.removeChild(detectCover);
                         resolve();
                     }
