@@ -140,7 +140,7 @@ class Scratch3FaceBlocks {
                             transparency: 0,
                             _shade: 50, // Used only for legacy `change shade by` blocks
                             penAttributes: {
-                                color4f: [1, 0, 0, 1],
+                                color4f: [0.66, 0.85, 0.40, 1],
                                 diameter: 1
                             }
                         };
