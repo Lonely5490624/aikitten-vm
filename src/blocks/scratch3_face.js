@@ -340,8 +340,10 @@ class Scratch3FaceBlocks {
                     ctx2.drawImage(imageDom2, 0, 0);
                     setTimeout(() => {
                         Face.faceMatchUpload(canvas1, canvas2).then(res => {
-                            if (res && res.distance) {
+                            if (res) {
                                 self.similarity = ((1 - res.distance) * 100).toFixed(0);
+                            } else {
+                                self.similarity = 0;
                             }
                             self.isFirst = false;
                             if (detectCover) document.body.removeChild(detectCover);
