@@ -49,6 +49,7 @@ class Scratch3FaceBlocks {
         this.similarity = 0;
 
         Face.loadModel();
+        this.runtime.Face = Face;
     }
 
     _getViewerLanguageCode () {
@@ -106,7 +107,7 @@ class Scratch3FaceBlocks {
             return;
         }
         let detectCover = null;
-        if (self.isFirst) {
+        if (this.isFirst) {
             detectCover = document.createElement('div');
             const detectImg = document.createElement('img');
             detectImg.src = iconDetectCover;
